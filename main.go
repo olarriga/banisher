@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-systemd/sdjournal"
+	"github.com/marcsauter/single"
 )
 
 var banisher *Banisher
@@ -39,16 +40,29 @@ func main() {
 		fmt.Printf("The Banisher v%s\n", appVersion)
 		os.Exit(0)
 	}
+	// remove timestamp on log
+	if *systemd {
+		log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+	}
 
 	// check if root privileges
 	if !isRoot() {
 		log.Fatalln("root privileges are required")
 	}
 
-	// remove timestamp on log
-	if *systemd {
-		log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+	// ensure that the app is executed only once
+	s := single.New("banisher")
+	if err := s.CheckLock(); err != nil && err == single.ErrAlreadyRunning {
+		log.Fatal("another instance of the app is already running, exiting")
+	} else if err != nil {
+		log.Fatalf("failed to acquire exclusive app lock: %v", err)
 	}
+	defer func() {
+		err := s.TryUnlock()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	// notify start of application with version
 	log.Printf("Starting The Banisher v%s", appVersion)
