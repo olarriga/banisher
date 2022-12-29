@@ -30,14 +30,15 @@ tasks:
       - cp debian/prerm dist/packages/debian/DEBIAN/.
       - cp debian/control dist/packages/debian/DEBIAN/.
       - cp debian/conffiles dist/packages/debian/DEBIAN/.
-      - sed -i 's/#version#/{{.GIT_VERSION}}-{{.PACKAGE_BUILD_DATE}}/g' dist/packages/debian/DEBIAN/control
+      - sed -i 's/#version#/{{.GIT_VERSION}}/g' dist/packages/debian/DEBIAN/control
       - mkdir -p dist/packages/debian/lib/systemd/system
       - cp debian/banisher.service dist/packages/debian/lib/systemd/system/.
       - mkdir -p dist/packages/debian/usr/sbin
       - cp dist/banisher dist/packages/debian/usr/sbin/.
       - mkdir -p dist/packages/debian/etc
       - cp dist/config.yml dist/packages/debian/etc/banisher.yml
-      - dpkg-deb --root-owner-group -Zxz --build dist/packages/debian dist/banisher_{{.GIT_VERSION}}-{{.PACKAGE_BUILD_DATE}}_amd64.deb
+      - dpkg-deb --root-owner-group -Zxz --build dist/packages/debian dist/banisher_{{.GIT_VERSION}}_amd64.deb
+      - tar -czf dist/banisher_{{.GIT_VERSION}}_amd64.tar.gz -C dist banisher
 
   generate-docker-image:
     cmds:
@@ -45,6 +46,6 @@ tasks:
 
   clean:
     cmds:
-      - rm dist/*.deb
-      - rm dist/packages -R
-      - rm dist/banisher
+      - rm -f dist/*.deb
+      - rm -f dist/*.tar.gz
+      - rm -f dist/banisher
