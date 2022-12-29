@@ -19,16 +19,18 @@ __WARNING The Banisher works only with logs handled by systemd journal and is cu
 
 #### Without debian package
 
-1. Download the lastest binary from the [releases section](https://github.com/olarriga/banisher/releases).
-2. Set the exec flag (`chmod +x banisher`).
-3. Create a [YAML](https://en.wikipedia.org/wiki/YAML) file named `config.yml` in the same directory than The Banisher binary to define the configuration.
-4. Start The Banisher (`./banisher`).
- 
+1. Download the lastest binary in tar.gz from the [releases section](https://github.com/olarriga/banisher/releases).
+2. Extract the binary (`tar xzf banisher_*.tar.gz`). 
+3. Set the exec flag (`chmod +x banisher`).
+4. Create a [YAML](https://en.wikipedia.org/wiki/YAML) file named `config.yml` in the same directory than The Banisher binary to define the configuration.
+5. Start The Banisher (`./banisher`).
+
 #### With the debian package
 
 1. Download the lastest debian package from the [releases section](https://github.com/olarriga/banisher/releases).
-2. Modify the /etc/banisher.yml file to define the configuration according to your needs
-3. Restart The Banisher (`systemctl restart banisher`).
+2. Install the package.
+3. Modify the /etc/banisher.yml file to define the configuration according to your needs.
+4. Restart The Banisher (`systemctl restart banisher`).
 
 ### Config
 
@@ -122,22 +124,31 @@ For example if you want those two rules, your config file will be:
   IPpos: 0
 ```  
 
+## List blocked IPs
+
+To list the IPs blocked by The Banisher : `ipset list banisher`
+
 ## And what can i do if something goes wrong ?
 
-An iptables rules will be automaticaly removed after defaultBanishmentDuration (defined in your config file).
+An IP will be automaticaly removed from the ipset after defaultBanishmentDuration (defined in your config file). All IP are removed from the ipset when the application is closed.
 
 If you made a mistake, just:
 
-- stop The Banisher
-- remove badger files, the db.bdg folder.
-- flush iptables INPUT chain `iptables -F INPUT`
-- add your own iptables rules (if needed)   
+- Stop The Banisher
+- Remove badger files (the db.bdg folder if you do not use the debian package)
+
+If The Banisher crashed and the filter rules have not been deleted, just :
+
+- Remove badger files (the db.bdg folder if you do not use the debian package)
+- Remove iptable rule : `iptables -D INPUT -m set --match-set banisher src -j DROP`
+- Destroy ipset : `ipset destroy banisher`
 
 ## Build
 
 ### Prerequisite
 
-- [Task](https://taskfile.dev/) is used for compilation with a Docker image to handle glibc version issue to keep The Banisher compatible with debian buster and bullseye (debian 10 and 11).
+- [Task](https://taskfile.dev/) is used for compilation.
+- A Docker image is used to handle glibc version issue to keep The Banisher compatible with debian buster and bullseye (debian 10 and 11).
 - To compile without the Docker image, the libsystemd0 library is needed (for debian like: `sudo apt install libsystemd-dev`).
 - The Banisher is dynamically linked with the glibc.
 
