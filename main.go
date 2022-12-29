@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/coreos/go-systemd/sdjournal"
@@ -109,7 +110,7 @@ func main() {
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func(wg *sync.WaitGroup) {
 		<-c
 		log.Println("Exiting The Banisher")
