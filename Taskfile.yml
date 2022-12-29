@@ -48,4 +48,5 @@ tasks:
     cmds:
       - rm -f dist/*.deb
       - rm -f dist/*.tar.gz
+      - rm -f dist/packages -R
       - rm -f dist/banisher
