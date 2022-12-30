@@ -21,6 +21,7 @@ type Banisher struct {
 	IPT *iptables.IPTables
 }
 
+// NewBanisher create The Banisher
 func NewBanisher(databaseFile string) (b *Banisher, err error) {
 	b = new(Banisher)
 
@@ -170,9 +171,8 @@ func (b *Banisher) Restore() error {
 			return nil
 		})
 		return err
-	} else {
-		return nil
 	}
+	return nil
 }
 
 // GC remove expired banishment
@@ -209,6 +209,7 @@ func (b *Banisher) GC() {
 	}
 }
 
+// Clear remove iptable rule and flush/destroy ipset
 func (b *Banisher) Clear() error {
 
 	// remove iptable rule

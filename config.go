@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Config for The Banisher
 type Config struct {
 	DefaultBanishmentDuration uint
 	Whitelist                 []string
