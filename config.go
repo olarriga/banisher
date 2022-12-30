@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
+	"os"
 	"regexp"
 
 	"gopkg.in/yaml.v3"
@@ -18,7 +18,7 @@ type Config struct {
 }
 
 func loadConfig(path string) (conf Config, err error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return conf, err
 	}
